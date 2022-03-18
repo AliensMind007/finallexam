@@ -1,5 +1,7 @@
 import 'package:finallexam/models/exammodel.dart';
 import 'package:finallexam/pages/create_page.dart';
+import 'package:finallexam/pages/edit_page.dart';
+import 'package:finallexam/services/hive.dart';
 import 'package:finallexam/services/mockservice.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +18,7 @@ class _HomePageState extends State<HomePage> {
   @override
   bool isLoading = false;
   List<ExamMoadel> postes = [];
-
+  List listimage = ["assets/images/boy1.jpg","assets/images/boy6.jpg","assets/images/mansProfile.png"];
   @override
   void initState() {
     // TODO: implement initState
@@ -52,59 +54,58 @@ class _HomePageState extends State<HomePage> {
     });
     if (response != null) _apiPostList();
   }
-
-  String greeting() {
-    if (DateTime.now().hour >= 6 && DateTime.now().hour < 12) {
-      return " Good Morning,";
-    } else if (DateTime.now().hour >= 12 && DateTime.now().hour < 18) {
-      return " Good Afternoon,";
-    } else {
-      return " Good Evening,";
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        leading: IconButton(onPressed: (){
+
+        },
+        icon: Icon(Icons.arrow_back_ios),
+        ),
+        title: Text("Beneficiary"),
+        elevation: 0,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+      ),
       body: Container(
-        color: Colors.black,
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+        color: Colors.white,
+        padding: const EdgeInsets.symmetric( horizontal: 10),
         child: isLoading
             ? const Center(child: CircularProgressIndicator.adaptive())
             : SingleChildScrollView(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     SizedBox(
                       height: 10,
                     ),
                     Container(
+                      padding: EdgeInsets.symmetric(vertical: 3),
+                      margin: EdgeInsets.symmetric(horizontal: 10),
+                      height: 50,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.cyanAccent,
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.grey.shade100,
                       ),
-                      child: ListTile(
-                        contentPadding:
-                            const EdgeInsets.symmetric(vertical: 30),
-                        title: RichText(
-                          text: TextSpan(
-                              text: greeting(),
-                              style: const TextStyle(
-                                  fontSize: 25,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w400),
-                              children: [
-                                TextSpan(
-                                    text: "\n Abdulbariy",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.w500))
-                              ]),
-                        ),
-                        trailing: ClipRRect(
-                          borderRadius: BorderRadius.circular(60),
-                          child: Text("hello"),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          prefixIcon: Icon(
+                            Icons.search,
+                            color: Colors.grey,
+                          ),
+                          hintText: "Search",
+                          hintStyle:
+                          TextStyle(color: Colors.grey, fontSize: 18),
                         ),
                       ),
                     ),
+                SizedBox(height: 20,),
+                Container(margin: EdgeInsets.symmetric(horizontal: 15,), child: Text("Recipients",style: TextStyle(color: Colors.grey,fontWeight: FontWeight.bold,fontSize: 30),)),
+                    SizedBox(height: 20,),
                     ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
@@ -112,129 +113,118 @@ class _HomePageState extends State<HomePage> {
                         itemBuilder: (context, index) {
                           return cardUI(postes[index], index);
                         }),
-                    InkWell(
-                      onTap: () {
-                        Navigator.pushNamed(context, CreatePage.id);
-                      },
-                      child: Container(
-                        height: 220,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            color: Colors.grey.shade200,
-                            border: Border.all(color: Colors.grey.shade400),
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(
-                              CupertinoIcons.add_circled,
-                              size: 30,
-                            ),
-                            SizedBox(
-                              height: 15,
-                            ),
-                            Text("Create new something")
-                          ],
-                        ),
-                      ),
-                    )
+                    SizedBox(height: 50,),
+                    Center(child: Text("Long press for edit !",style: TextStyle(color: Colors.grey.shade200,fontSize: 30,fontWeight: FontWeight.bold),))
+                    // InkWell(
+                    //   onTap: () {
+                    //     Navigator.pushNamed(context, CreatePage.id);
+                    //   },
+                    //   child: Container(
+                    //     height: 220,
+                    //     width: double.infinity,
+                    //     decoration: BoxDecoration(
+                    //         color: Colors.grey.shade200,
+                    //         border: Border.all(color: Colors.grey.shade400),
+                    //         borderRadius: BorderRadius.circular(10)),
+                    //     child: Column(
+                    //       mainAxisAlignment: MainAxisAlignment.center,
+                    //       crossAxisAlignment: CrossAxisAlignment.center,
+                    //       children: [
+                    //         Icon(
+                    //           CupertinoIcons.add_circled,
+                    //           size: 30,
+                    //         ),
+                    //         SizedBox(
+                    //           height: 15,
+                    //         ),
+                    //         Text("Create new something")
+                    //       ],
+                    //     ),
+                    //   ),
+                    // )
                   ],
                 ),
               ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey.shade400,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        currentIndex: 0,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: ""),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.chat_bubble_outline), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.menu), label: ""),
-        ],
+
+      floatingActionButton: FloatingActionButton(
+        elevation: 0,
+        onPressed: (){
+          Navigator.pushNamed(context, CreatePage.id);
+        },child: Icon(Icons.add,size: 50,),
+
       ),
     );
   }
 
-  Widget cardUI(ExamMoadel post, int index) {
+  Widget cardUI(ExamMoadel post, int index,) {
     return Dismissible(
-      key: const ValueKey(0),
-      onDismissed: (_) async {
-        postes.remove(post);
-        // HiveDB.storeSavedCards(cards);
-        await Network.DEL(Network.API_DELETE + post.id!, Network.paramsEmpty());
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 25),
-        padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 25),
-        height: 220,
-        width: double.infinity,
-        decoration: BoxDecoration(
-            color: Colors.deepOrangeAccent,
-            border: Border.all(color: Colors.cyanAccent),
-            borderRadius: BorderRadius.circular(10)),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Text(post.comment.toString())),
-                Text(post.comment.toString()),
-              ],
-            ),
-            Text(
-              post.username.toString(),
-              style: TextStyle(color: Colors.grey.shade50, fontSize: 27),
-              textAlign: TextAlign.center,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      post.lastname.toString(),
-                      style:
-                          TextStyle(color: Colors.grey.shade50, fontSize: 11),
+      key: UniqueKey(),
+        onDismissed: (_) async {
+          postes.remove(post);
+          HiveDB.storeSavedCards(postes);
+          await Network.DEL(Network.API_DELETE + post.id!, Network.paramsEmpty());
+        },
+      child: GestureDetector(
+        onTap: () {
+
+        },
+        onLongPress: (){Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return EditPage(examMoadel: postes[index]);
+        }));},
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 20),
+          child: Row(
+            children: <Widget>[
+              Container(
+                      width: 70,
+                      height: 70,
+                      decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                      image: AssetImage(
+                      post.username!.length>4 ? listimage[1]:listimage[0]),
+                      fit: BoxFit.cover)),
                     ),
-                    const SizedBox(
-                      height: 5,
+
+              SizedBox(
+                width: 20,
+              ),
+              Column(
+                crossAxisAlignment:
+                CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                 post.username.toString(),
+                    style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,),
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context)
+                        .size
+                        .width -
+                        220,
+                    child: Text(
+                    post.something.toString(),
+                      style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.grey,fontWeight: FontWeight.bold),
+
                     ),
-                    Text(post.something.toString(),
-                        style:
-                            TextStyle(color: Colors.grey.shade50, fontSize: 18))
-                  ],
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      post.firstname.toString(),
-                      style:
-                          TextStyle(color: Colors.grey.shade50, fontSize: 11),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text(post.lastname.toString(),
-                        style:
-                            TextStyle(color: Colors.grey.shade50, fontSize: 18))
-                  ],
-                ),
-              ],
-            ),
-          ],
+                  ),
+                ],
+              ),
+             MaterialButton(onPressed: (){},
+             child: Text("Send",style: TextStyle(color: Colors.white),),
+               color: Colors.blueAccent,
+               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+             )
+            ],
+          ),
         ),
       ),
     );
