@@ -1,23 +1,22 @@
-import 'dart:math';
-
 import 'package:finallexam/models/exammodel.dart';
 import 'package:finallexam/pages/home_page.dart';
 import 'package:finallexam/services/mockservice.dart';
 import 'package:flutter/material.dart';
 
-class CreatePage extends StatefulWidget {
-  const CreatePage({Key? key}) : super(key: key);
-  static const String id = "CreatePage";
+class EditPage extends StatefulWidget {
+  EditPage({Key? key, required this.examMoadel}) : super(key: key);
+  static const String id = "edit_page";
+  ExamMoadel examMoadel;
 
   @override
-  State<CreatePage> createState() => _CreatePageState();
+  State<EditPage> createState() => _EditPageState();
 }
 
-class _CreatePageState extends State<CreatePage> {
+class _EditPageState extends State<EditPage> {
   bool isLoading = false;
-  TextEditingController usernamerController = TextEditingController();
+  TextEditingController userNameController = TextEditingController();
   TextEditingController commentController = TextEditingController();
-  TextEditingController objectnameController = TextEditingController();
+  TextEditingController objectNameController = TextEditingController();
   TextEditingController somethingController = TextEditingController();
   TextEditingController firstnameController = TextEditingController();
   TextEditingController lastnameController = TextEditingController();
@@ -25,38 +24,32 @@ class _CreatePageState extends State<CreatePage> {
   void _apiPostList() async {
     await Network.GET(Network.API_LIST, Network.paramsEmpty())
         .then((response) => {
-              print(response!),
-              _showResponse(response),
-            });
+      print(response!),
+      _showResponse(response),
+    });
   }
 
   void createList() async {
-    String username = usernamerController.text.trim().toString();
+    String username = userNameController.text.trim().toString();
     String something = somethingController.text.trim().toString();
-    String objectname = objectnameController.text.trim().toString();
+    String objectname = objectNameController.text.trim().toString();
     String comment = commentController.text.trim().toString();
     String firstname = firstnameController.text.trim().toString();
     String lastname = lastnameController.text.trim().toString();
     ExamMoadel note = ExamMoadel(
+        id: widget.examMoadel.id,
         username: username,
         comment: comment,
         objectname: objectname,
         something: something,
         firstname: firstname,
         lastname: lastname);
-    await Network.POST(Network.API_CREATE, Network.bodyCreate(note))
+    await Network.PUT(Network.API_UPDATE+widget.examMoadel.id!, Network.bodyUpdate(note))
         .then((value) => {
-              if (value != null) {_apiPostList()}
-            });
+      if (value != null) {_apiPostList()}
+    });
     Navigator.pushNamed(context, HomePage.id);
   }
-  // _random(){
-  // var rng = Random();
-  // for(var i = 0;i<=listimage.length;i++){
-  //   var img = (rng.nextInt(100));
-  // }
-  // }
-  // List listimage = ["assets/images/boy1.jpg","assets/images/boy6.jpg","assets/images/mansProfile.png"];
 
   void _showResponse(String response) {
     setState(() {
@@ -76,12 +69,12 @@ class _CreatePageState extends State<CreatePage> {
 
   @override
   void initState() {
-    border = OutlineInputBorder(
-      borderSide: BorderSide(
-        color: Colors.grey.withOpacity(0.7),
-        width: 2.0,
-      ),
-    );
+    userNameController.text = widget.examMoadel.username!;
+    objectNameController.text = widget.examMoadel.objectname!;
+    somethingController.text = widget.examMoadel.something!;
+    commentController.text = widget.examMoadel.comment!;
+    firstnameController.text = widget.examMoadel.firstname!;
+    lastnameController.text = widget.examMoadel.lastname!;
     super.initState();
   }
 
@@ -90,42 +83,34 @@ class _CreatePageState extends State<CreatePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("CreatePage"),
-        elevation: 0,
+        title: Text("Edit page"),
         backgroundColor: Colors.white,
-foregroundColor: Colors.black,
+        foregroundColor: Colors.black,
+        elevation: 0,
+        // centerTitle: true,
       ),
       body: SingleChildScrollView(
+
         child: Column(
           children: [
             SizedBox(
               height: 20,
             ),
             Center(
-              child: Stack(
-                children:[ Container(
-                  height: 100,
-                  width: 100,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      image: DecorationImage(
-                          image: AssetImage("assets/images/boy6.jpg"),
-                          fit: BoxFit.cover)),
-                ),
-                Container(height: 30,width: 30, margin: EdgeInsets.only(top: 70,left: 70),
-                    decoration: BoxDecoration(
-borderRadius: BorderRadius.circular(15),
-                      color: Colors.grey.shade300,
-
-                    ),
-                    child: Icon(Icons.photo_camera_rounded)),
-                ]
+              child: Container(
+                height: 100,
+                width: 100,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    image: DecorationImage(
+                        image: AssetImage("assets/images/boy6.jpg"),
+                        fit: BoxFit.cover)),
               ),
             ),
             Container(
               padding: EdgeInsets.all(20),
               child: TextField(
-                controller: usernamerController,
+                controller: userNameController,
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.symmetric(horizontal: 10),
                   border: OutlineInputBorder(
@@ -141,7 +126,7 @@ borderRadius: BorderRadius.circular(15),
             Container(
               padding: EdgeInsets.all(20),
               child: TextFormField(
-                controller: objectnameController,
+                controller: objectNameController,
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.symmetric(horizontal: 10),
                   border: OutlineInputBorder(
@@ -182,7 +167,7 @@ borderRadius: BorderRadius.circular(15),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(25)),
               child: Text(
-                "Save",
+                "Edit",
                 style: TextStyle(color: Colors.white),
               ),
             ),

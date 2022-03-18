@@ -17,6 +17,7 @@ dependencies:
   flutter_credit_card: ^3.0.1
   http:
   hive:
+  connectivity_plus:
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -26,4 +27,5 @@ dev_dependencies:
 flutter:
 
   uses-material-design: true
-
+  assets:
+    - assets/images/
